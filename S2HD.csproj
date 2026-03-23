@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net48</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>S2HD</AssemblyName>
     <LangVersion>12</LangVersion>
     <Nullable>disable</Nullable>
@@ -11,6 +11,9 @@
     <ProjectGuid>{AB1C031B-CC43-4A01-9F35-B77FEC439639}</ProjectGuid>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)/external/**</DefaultItemExcludes>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)/packages/**</DefaultItemExcludes>
+  </PropertyGroup>
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <DefineConstants>$(DefineConstants);WINDOWS_MESSAGE_BOX</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -44,7 +47,6 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
@@ -52,7 +54,6 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE</DefineConstants>
-    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
@@ -66,5 +67,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="OpenTK.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

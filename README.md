@@ -10,4 +10,8 @@ I used dotpeek to export the project and dnSpy to reference the scripts while fi
 
 ## How to build
 
-Clone the project, open the Visual Studio solution file, and you should be good to go!
+Check [Building.md](Building.md)
+
+## Changes
+
+- **Film / H.264 cutscenes**: Accord.Video.FFMPEG doesn't support modern .NET so the end video that you'd get once you beat Hill Top Zone doesn't play.
