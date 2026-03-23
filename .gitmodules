@@ -10,3 +10,6 @@
 [submodule "external/SonicOrca.SDL2"]
 	path = external/SonicOrca.SDL2
 	url = https://github.com/SonicOrcaModding/SonicOrca.SDL2
+[submodule "external/SonicOrca"]
+	path = external/SonicOrca
+	url = https://github.com/SonicOrcaModding/SonicOrca

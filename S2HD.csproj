@@ -285,6 +285,10 @@
       <Project>{1aedef69-0893-4dcb-8790-d672a7ae4193}</Project>
       <Name>SonicOrca.SDL2</Name>
     </ProjectReference>
+    <ProjectReference Include="external\SonicOrca\SonicOrca.csproj">
+      <Project>{316eea62-0f1e-4531-9d67-f13f5ae4af32}</Project>
+      <Name>SonicOrca</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

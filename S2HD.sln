@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonicOrca.Resources", "exte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonicOrca.SDL2", "external\SonicOrca.SDL2\SonicOrca.SDL2.csproj", "{1AEDEF69-0893-4DCB-8790-D672A7AE4193}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonicOrca", "external\SonicOrca\SonicOrca.csproj", "{316EEA62-0F1E-4531-9D67-F13F5AE4AF32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -38,8 +40,15 @@ Global
 		{1AEDEF69-0893-4DCB-8790-D672A7AE4193}.Debug|x64.Build.0 = Debug|Any CPU
 		{1AEDEF69-0893-4DCB-8790-D672A7AE4193}.Release|x64.ActiveCfg = Release|Any CPU
 		{1AEDEF69-0893-4DCB-8790-D672A7AE4193}.Release|x64.Build.0 = Release|Any CPU
+		{316EEA62-0F1E-4531-9D67-F13F5AE4AF32}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{316EEA62-0F1E-4531-9D67-F13F5AE4AF32}.Debug|x64.Build.0 = Debug|Any CPU
+		{316EEA62-0F1E-4531-9D67-F13F5AE4AF32}.Release|x64.ActiveCfg = Release|Any CPU
+		{316EEA62-0F1E-4531-9D67-F13F5AE4AF32}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {74827193-4C74-4D33-B179-9EEC20B87503}
 	EndGlobalSection
 EndGlobal
