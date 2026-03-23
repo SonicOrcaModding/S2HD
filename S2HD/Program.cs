@@ -22,20 +22,40 @@ namespace S2HD
       public const string BuildConfigurationName = "RELEASE";
       public static Version AppVersion = Assembly.GetExecutingAssembly().GetName().Version;
       public static string AppArchitecture = Environment.Is64BitProcess ? "x64" : "x86";
+#if __ANDROID__
+      public static Version AppMinOpenGLVersion = new Version(3, 0);
+#else
       public static Version AppMinOpenGLVersion = new Version(3, 3);
-      private static string IniConfigurationPath = "sonicorca.cfg";
+#endif
+      internal const string IniConfigurationPath = "sonicorca.cfg";
 
       public static IniConfiguration Configuration { get; private set; }
 
+#if __ANDROID__
+      private static string _androidUserDataDirectory;
+
+      public static void SetAndroidUserDataDirectory(string directory) => _androidUserDataDirectory = directory;
+#endif
+
       public static string UserDataDirectory
       {
-        get => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SonicOrca");
+        get
+        {
+#if __ANDROID__
+          if (!string.IsNullOrEmpty(_androidUserDataDirectory))
+            return _androidUserDataDirectory;
+          return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SonicOrca");
+#else
+          return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SonicOrca");
+#endif
+        }
       }
 
-      private static string LogPath => Path.Combine(Program.UserDataDirectory, "sonicorca.log");
+      internal static string LogPath => Path.Combine(Program.UserDataDirectory, "sonicorca.log");
 
       public static IReadOnlyList<string> CommandLineArguments { get; private set; }
 
+#if !__ANDROID__
       private static void Main(string[] args)
       {
         Program.CommandLineArguments = (IReadOnlyList<string>) args;
@@ -44,6 +64,21 @@ namespace S2HD
         Program.LoadConfiguration();
         Program.RunOrFocusGame();
       }
+#endif
+
+#if __ANDROID__
+      public static void StartFromAndroid()
+      {
+        Program.CommandLineArguments = (IReadOnlyList<string>)new[] { "--nologos" };
+        Program.EnsureUserDataDirectoryExists();
+        Program.WriteLogHeader();
+        global::Android.Util.Log.Info("S2HD", "Config and logs: {0}", Path.Combine(Program.UserDataDirectory, Program.IniConfigurationPath));
+        global::Android.Util.Log.Info("S2HD", "Log file: {0}", Program.LogPath);
+        global::Android.Util.Log.Info("S2HD", "Game content root (data/shaders): {0}", GamePaths.ContentRootDirectory);
+        Program.LoadConfiguration();
+        Program.RunOrFocusGame();
+      }
+#endif
 
       private static void EnsureUserDataDirectoryExists()
       {
@@ -72,6 +107,9 @@ namespace S2HD
 
       private static void RunOrFocusGame()
       {
+#if __ANDROID__
+        Program.RunGame();
+#else
         bool createdNew;
         using (new Mutex(true, "SonicOrca", out createdNew))
         {
@@ -80,6 +118,7 @@ namespace S2HD
           else
             Program.FocusGame();
         }
+#endif
       }
 
       private static IPlatform GetPlatform() => (IPlatform) SDL2Platform.Instance;
@@ -149,7 +188,11 @@ namespace S2HD
         if (!(openGlVersion < Program.AppMinOpenGLVersion))
           return true;
         Trace.WriteLine("OpenGL version too low");
+#if __ANDROID__
+        Program.ShowErrorMessageBox($"OpenGL ES {Program.AppMinOpenGLVersion.Major}.{Program.AppMinOpenGLVersion.Minor} or later is required.");
+#else
         Program.ShowErrorMessageBox($"OpenGL {Program.AppMinOpenGLVersion.Major}.{Program.AppMinOpenGLVersion.Minor} or later is required.");
+#endif
         return false;
       }
 
@@ -157,16 +200,25 @@ namespace S2HD
       {
         Trace.WriteLine("ERROR: " + text);
         Console.Error.WriteLine(text);
+#if __ANDROID__
+        global::Android.Util.Log.Error("S2HD", text);
+#endif
 #if WINDOWS_MESSAGE_BOX
         WindowsShell.ShowMessageBox(text, "SonicOrca");
 #endif
       }
 
+      private static bool _traceListenersAdded;
+
       private static void WriteLogHeader()
       {
         Trace.AutoFlush = true;
-        Trace.Listeners.Add((TraceListener) new TextWriterTraceListener(Program.LogPath));
-        Trace.Listeners.Add((TraceListener) new ConsoleTraceListener());
+        if (!_traceListenersAdded)
+        {
+          Trace.Listeners.Add((TraceListener) new TextWriterTraceListener(Program.LogPath));
+          Trace.Listeners.Add((TraceListener) new ConsoleTraceListener());
+          _traceListenersAdded = true;
+        }
         Trace.WriteLine((object) Environment.OSVersion);
         Trace.WriteLine($"SonicOrca {Program.AppVersion} [{"RELEASE"} {Program.AppArchitecture}]");
         Trace.WriteLine(DateTime.Now.ToString("dd MMMM yyyy @ hh:mm tt"));

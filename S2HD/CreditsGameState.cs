@@ -76,6 +76,10 @@ namespace S2HD
         {
           instance._gameContext.ResourceTree.FullfillLoadedResourcesByAttribute((object) instance);
           instance._loaded = true;
+#if __ANDROID__
+          instance._creditsFilmInstance = null;
+          yield break;
+#else
           instance._creditsFilmInstance = new FilmInstance(instance._creditsFilmGroup);
           instance._musicInstance = new SampleInstance(instance._gameContext, instance._musicSample, new int?(458980));
           instance._fadeOpacity = 0.0;
@@ -112,6 +116,7 @@ namespace S2HD
             instance._creditsFilmInstance.Animate();
             yield return UpdateResult.Next();
           }
+#endif
         }
       }
 
@@ -119,6 +124,10 @@ namespace S2HD
       {
         if (!this._loaded)
           return;
+#if __ANDROID__
+        if (this._creditsFilmInstance == null)
+          return;
+#endif
         Renderer renderer = this._gameContext.Renderer;
         this._creditsFilmInstance.Draw(renderer);
         if (this._fadeOpacity >= 1.0)

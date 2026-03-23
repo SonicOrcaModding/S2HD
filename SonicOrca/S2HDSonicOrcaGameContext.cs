@@ -20,7 +20,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace SonicOrca
 {
@@ -64,10 +63,10 @@ namespace SonicOrca
         this.Settings.Apply();
         this.Window.WindowTitle = "Sonic 2 HD";
         this.Window.AspectRatio = new Vector2i(16 /*0x10*/, 9);
-        string directoryName = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-        this.LoadResourceFiles(Path.Combine(directoryName, "data"));
+        string contentRoot = GamePaths.ContentRootDirectory;
+        this.LoadResourceFiles(Path.Combine(contentRoot, "data"));
         if (bool.Parse(this.Configuration.GetProperty("general", "use_mods", "true")))
-          this.LoadResourceFiles(Path.Combine(directoryName, "mods"));
+          this.LoadResourceFiles(Path.Combine(contentRoot, "mods"));
         this.RenderFactory = DefaultRendererFactory.Create(this.Window.GraphicsContext);
         this._rootGameState = (IGameState) new RootGameState(this);
         this._gameStateUpdater = new Updater(this._rootGameState.Update());
@@ -316,7 +315,7 @@ namespace SonicOrca
       {
         if (!Directory.Exists(inputDirectory))
           return;
-        foreach (string file in Directory.GetFiles(inputDirectory))
+        foreach (string file in Directory.GetFiles(inputDirectory, "*.dat", SearchOption.AllDirectories))
           this.ResourceTree.MergeWith(new ResourceFile(file).Scan());
       }
 
