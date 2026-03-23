@@ -1,0 +1,12 @@
+[submodule "external/SonicOrca.Common"]
+	path = external/SonicOrca.Common
+	url = https://github.com/SonicOrcaModding/SonicOrca.Common
+[submodule "external/SonicOrca.Drawing"]
+	path = external/SonicOrca.Drawing
+	url = https://github.com/SonicOrcaModding/SonicOrca.Drawing
+[submodule "external/SonicOrca.Resources"]
+	path = external/SonicOrca.Resources
+	url = https://github.com/SonicOrcaModding/SonicOrca.Resources
+[submodule "external/SonicOrca.SDL2"]
+	path = external/SonicOrca.SDL2
+	url = https://github.com/SonicOrcaModding/SonicOrca.SDL2
