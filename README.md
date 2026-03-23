@@ -2,8 +2,6 @@
 
 * A decompilation of Sonic 2 HD.
 
-* Runs on x64 only (sadly)
-
 * Decomp done in one hour.
 
 # Tools used
