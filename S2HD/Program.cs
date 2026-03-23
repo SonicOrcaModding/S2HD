@@ -12,7 +12,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace S2HD
@@ -26,12 +25,6 @@ namespace S2HD
       public static Version AppMinOpenGLVersion = new Version(3, 3);
       private static string IniConfigurationPath = "sonicorca.cfg";
 
-      [DllImport("user32.dll")]
-      private static extern int SetForegroundWindow(IntPtr hWnd);
-
-      [DllImport("user32.dll")]
-      private static extern int MessageBox(IntPtr hwnd, string text, string caption, uint type);
-
       public static IniConfiguration Configuration { get; private set; }
 
       public static string UserDataDirectory
@@ -43,7 +36,6 @@ namespace S2HD
 
       public static IReadOnlyList<string> CommandLineArguments { get; private set; }
 
-      [STAThread]
       private static void Main(string[] args)
       {
         Program.CommandLineArguments = (IReadOnlyList<string>) args;
@@ -144,7 +136,9 @@ namespace S2HD
         Process process = ((IEnumerable<Process>) Process.GetProcessesByName(current.ProcessName)).Where<Process>((Func<Process, bool>) (x => x.Id != current.Id)).FirstOrDefault<Process>();
         if (process == null)
           return;
-        Program.SetForegroundWindow(process.MainWindowHandle);
+#if WINDOWS_MESSAGE_BOX
+        WindowsShell.SetForegroundWindow(process.MainWindowHandle);
+#endif
       }
 
       private static bool CheckOpenGL(IPlatform platform)
@@ -161,7 +155,11 @@ namespace S2HD
 
       public static void ShowErrorMessageBox(string text)
       {
-        Program.MessageBox(IntPtr.Zero, text, "SonicOrca", 48U /*0x30*/);
+        Trace.WriteLine("ERROR: " + text);
+        Console.Error.WriteLine(text);
+#if WINDOWS_MESSAGE_BOX
+        WindowsShell.ShowMessageBox(text, "SonicOrca");
+#endif
       }
 
       private static void WriteLogHeader()

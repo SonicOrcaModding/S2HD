@@ -327,11 +327,6 @@ namespace S2HD.Title
                     Text = "QUIT",
                     Action = new Action(this.OnSelectQuit)
                 },
-                new UserInterface.MenuItem
-                {
-                    Text = "LEVEL SELECT",
-                    Action = new Action(() => { this._levelSelectEnabled = true; this.InitialiseLevelSelect(); })
-                }
             };
             this._menuItemWidgets = new UserInterface.MenuItemWidget[5];
             for (int i = -2; i <= 2; i++)
