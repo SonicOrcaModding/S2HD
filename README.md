@@ -2,7 +2,7 @@
 
 * A decompilation of Sonic 2 HD.
 
-* Decomp done in one hour.
+* Initial decomp done in one hour.
 
 # Tools used
 
