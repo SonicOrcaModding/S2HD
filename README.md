@@ -10,7 +10,7 @@ I used dotpeek to export the project and dnSpy to reference the scripts while fi
 
 ## How to build
 
-Check [Building.md](Building.md)
+Check [BUILD.md](BUILD.md)
 
 ## Changes
 
