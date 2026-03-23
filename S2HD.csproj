@@ -61,21 +61,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SonicOrca">
-      <HintPath>lib\SonicOrca.dll</HintPath>
-    </Reference>
-    <Reference Include="SonicOrca.Common">
-      <HintPath>lib\SonicOrca.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="SonicOrca.Drawing">
-      <HintPath>lib\SonicOrca.Drawing.dll</HintPath>
-    </Reference>
-    <Reference Include="SonicOrca.Resources">
-      <HintPath>lib\SonicOrca.Resources.dll</HintPath>
-    </Reference>
-    <Reference Include="SonicOrca.SDL2">
-      <HintPath>lib\SonicOrca.SDL2.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable">
       <HintPath>lib\System.Collections.Immutable.dll</HintPath>
@@ -282,6 +267,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="external\SonicOrca.Common\SonicOrca.Common.csproj">
+      <Project>{3c8278aa-3d64-414f-92a9-6334cf741eb2}</Project>
+      <Name>SonicOrca.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="external\SonicOrca.Drawing\SonicOrca.Drawing.csproj">
+      <Project>{e660d339-9e15-4b97-81e4-4d50595630b5}</Project>
+      <Name>SonicOrca.Drawing</Name>
+    </ProjectReference>
+    <ProjectReference Include="external\SonicOrca.Resources\SonicOrca.Resources.csproj">
+      <Project>{4280aadb-980e-41e1-bd06-f56350e9e93b}</Project>
+      <Name>SonicOrca.Resources</Name>
+    </ProjectReference>
+    <ProjectReference Include="external\SonicOrca.SDL2\SonicOrca.SDL2.csproj">
+      <Project>{1aedef69-0893-4dcb-8790-d672a7ae4193}</Project>
+      <Name>SonicOrca.SDL2</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
