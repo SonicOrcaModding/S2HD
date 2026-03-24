@@ -38,7 +38,7 @@ namespace S2HD
                 return;
             _gameThreadStarted = true;
 
-            string userData = Path.Combine(FilesDir!.AbsolutePath, "SonicOrca");
+            string userData = Path.Combine(GetAndroidAppFilesRoot(), "SonicOrca");
             Program.SetAndroidUserDataDirectory(userData);
             Log.Info("S2HD", "Set user data dir (sonicorca.cfg + sonicorca.log): {0}", userData);
 
@@ -50,17 +50,22 @@ namespace S2HD
 
         private void EnsureBundledContentExtracted()
         {
-            string contentRoot = Path.Combine(FilesDir!.AbsolutePath, "SonicOrca", "Content");
+            string contentRoot = Path.Combine(GetAndroidAppFilesRoot(), "SonicOrca", "Content");
             string dataSentinel = Path.Combine(contentRoot, "data", "sonicorca.dat");
-            string shaderSentinel = Path.Combine(contentRoot, "shaders", "greyscale_filter.shader");
-            if (!File.Exists(dataSentinel) || !File.Exists(shaderSentinel))
+            if (!File.Exists(dataSentinel))
             {
                 ExtractAssetDirectory("data", Path.Combine(contentRoot, "data"));
-                ExtractAssetDirectory("shaders", Path.Combine(contentRoot, "shaders"));
             }
+            ExtractAssetDirectory("shaders", Path.Combine(contentRoot, "shaders"));
 
             GamePaths.ContentRootDirectory = contentRoot;
             Log.Info("S2HD", "Bundled content root: {0}", contentRoot);
+        }
+
+        private string GetAndroidAppFilesRoot()
+        {
+            string? externalFiles = GetExternalFilesDir(null)?.AbsolutePath;
+            return !string.IsNullOrEmpty(externalFiles) ? externalFiles : FilesDir!.AbsolutePath;
         }
 
         private void ExtractAssetDirectory(string assetDir, string targetDir)
