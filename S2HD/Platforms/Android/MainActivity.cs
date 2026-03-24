@@ -1,6 +1,7 @@
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using Android.Runtime;
 using Android.Util;
 using SonicOrca;
 using System;
@@ -11,14 +12,32 @@ namespace S2HD
 {
     [Activity(
         Label = "S2HD",
+        Theme = "@android:style/Theme.Black.NoTitleBar.Fullscreen",
+        ScreenOrientation = ScreenOrientation.SensorLandscape,
         MainLauncher = true,
         LaunchMode = LaunchMode.SingleInstance,
         ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.KeyboardHidden)]
-    public class MainActivity : Activity
+    public class MainActivity : Org.Libsdl.App.SDLActivity
     {
-        protected override void OnCreate(Bundle savedInstanceState)
+        private bool _gameThreadStarted;
+
+        protected MainActivity(IntPtr javaReference, JniHandleOwnership transfer)
+            : base(javaReference, transfer)
         {
-            base.OnCreate(savedInstanceState);
+        }
+
+        public MainActivity()
+        {
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+
+            if (_gameThreadStarted)
+                return;
+            _gameThreadStarted = true;
+
             string userData = Path.Combine(FilesDir!.AbsolutePath, "SonicOrca");
             Program.SetAndroidUserDataDirectory(userData);
             Log.Info("S2HD", "Set user data dir (sonicorca.cfg + sonicorca.log): {0}", userData);

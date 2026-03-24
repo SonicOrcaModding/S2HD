@@ -92,7 +92,12 @@ namespace SonicOrca
         this._musicSample = resourceTree.GetLoadedResource<Sample>("SONICORCA/TITLE/MUSIC");
       }
 
-      public void Dispose() => this._resourceSession.Dispose();
+      public void Dispose()
+      {
+        this._loadingCTS?.Cancel();
+        this._resourceSession?.Dispose();
+        this._resourceSession = null;
+      }
 
       public IEnumerable<UpdateResult> Update()
       {

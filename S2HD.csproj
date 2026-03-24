@@ -28,12 +28,8 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
     <AndroidAsset Include="data/**" />
     <AndroidAsset Include="Shaders/**" LogicalName="shaders/%(RecursiveDir)%(Filename)%(Extension)" />
-    <!-- Provide SDL JNI bridge Java classes without generating C# bindings. -->
     <AndroidJavaSource Remove="S2HD/Platforms/Android/java/**/*.java" />
-    <AndroidJavaSource Include="S2HD/Platforms/Android/java/org/libsdl/app/SDLActivity.java" Bind="false" />
-    <AndroidJavaSource Include="S2HD/Platforms/Android/java/org/libsdl/app/SDLInputConnection.java" Bind="false" />
-    <AndroidJavaSource Include="S2HD/Platforms/Android/java/org/libsdl/app/SDLAudioManager.java" Bind="false" />
-    <AndroidJavaSource Include="S2HD/Platforms/Android/java/org/libsdl/app/SDLControllerManager.java" Bind="false" />
+    <AndroidJavaSource Include="S2HD/Platforms/Android/java/org/libsdl/app/*.java" Bind="false" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
