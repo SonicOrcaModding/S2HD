@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SonicOrca;
@@ -118,6 +118,25 @@ namespace S2HD.Title
         {
             Controller controller = this._gameContext.Pressed[0];
             InputState pressed = this._gameContext.Input.Pressed;
+            bool startPressed = controller.Start;
+            int horizontalInput = 0;
+            if (Math.Abs(controller.DirectionLeft.X) >= 0.5)
+            {
+                horizontalInput = Math.Sign(controller.DirectionLeft.X);
+            }
+#if __ANDROID__
+            bool tapPressed;
+            int swipeHorizontal;
+            this.GetAndroidTouchMenuInput(out tapPressed, out swipeHorizontal);
+            if (tapPressed)
+            {
+                startPressed = true;
+            }
+            if (horizontalInput == 0 && swipeHorizontal != 0)
+            {
+                horizontalInput = swipeHorizontal;
+            }
+#endif
             if (this._busy)
             {
                 return;
@@ -169,7 +188,7 @@ namespace S2HD.Title
                         this._gameContext.Audio.PlaySound(this._sampleNavigateCursor);
                     }
                 }
-                if (controller.Start)
+                if (startPressed)
                 {
                     this._gameContext.Audio.PlaySound(this._sampleNavigateYes);
                     this.OnLevelSelectStart();
@@ -183,7 +202,7 @@ namespace S2HD.Title
             }
             else if (this._pressStartActive)
             {
-                if (controller.Start)
+                if (startPressed)
                 {
                     this._effectEventManager.BeginEvent(this.EffectPressStart());
                     this._pressStartActive = false;
@@ -194,9 +213,9 @@ namespace S2HD.Title
             }
             else if (this._characterSelectActive)
             {
-                if (Math.Abs(controller.DirectionLeft.X) >= 0.5)
+                if (horizontalInput != 0)
                 {
-                    if (Math.Sign(controller.DirectionLeft.X) < 0)
+                    if (horizontalInput < 0)
                     {
                         this._characterSelectionIndex = (this._characterSelectionIndex - 1 + 3) % 3;
                     }
@@ -214,7 +233,7 @@ namespace S2HD.Title
                     this._gameContext.Audio.PlaySound(this._sampleNavigateBack);
                     return;
                 }
-                if (controller.Start)
+                if (startPressed)
                 {
                     this._gameContext.Audio.PlaySound(this._sampleNavigateYes);
                     this._miniSonicAniInstance.Index = (this.IsSonicActive ? 12 : 11);
@@ -236,9 +255,9 @@ namespace S2HD.Title
                     this.InitialiseMenuItemWidgets();
                     this._gameContext.Audio.PlaySound(this._sampleNavigateBack);
                 }
-                if (Math.Abs(controller.DirectionLeft.X) >= 0.5)
+                if (horizontalInput != 0)
                 {
-                    int num = Math.Sign(controller.DirectionLeft.X);
+                    int num = horizontalInput;
                     if (num < 0)
                     {
                         this._selectionIndex = (this._selectionIndex - 1 + this._menuItems.Length) % this._menuItems.Length;
@@ -250,7 +269,7 @@ namespace S2HD.Title
                     this._effectEventManager.BeginEvent(this.EffectNavigateMenu(num));
                     this._gameContext.Audio.PlaySound(this._sampleNavigateCursor);
                 }
-                if (controller.Start)
+                if (startPressed)
                 {
                     Action action = this._menuItems[this._selectionIndex].Action;
                     if (action != null)
@@ -261,6 +280,52 @@ namespace S2HD.Title
                 }
             }
         }
+
+#if __ANDROID__
+        private void GetAndroidTouchMenuInput(out bool tapPressed, out int horizontalSwipe)
+        {
+            tapPressed = false;
+            horizontalSwipe = 0;
+            MouseState currentMouse = this._gameContext.Input.CurrentState.Mouse;
+            MouseState pressedMouse = this._gameContext.Input.Pressed.Mouse;
+            MouseState releasedMouse = this._gameContext.Input.Released.Mouse;
+            if (pressedMouse.Left)
+            {
+                this._touchTracking = true;
+                this._touchStartX = currentMouse.X;
+                this._touchStartY = currentMouse.Y;
+                this._touchMaxDistanceSquared = 0;
+            }
+            if (this._touchTracking && currentMouse.Left)
+            {
+                int dx = currentMouse.X - this._touchStartX;
+                int dy = currentMouse.Y - this._touchStartY;
+                int distanceSquared = dx * dx + dy * dy;
+                if (distanceSquared > this._touchMaxDistanceSquared)
+                {
+                    this._touchMaxDistanceSquared = distanceSquared;
+                }
+            }
+            if (!this._touchTracking || !releasedMouse.Left)
+            {
+                return;
+            }
+            int releaseDx = releasedMouse.X - this._touchStartX;
+            int releaseDy = releasedMouse.Y - this._touchStartY;
+            this._touchTracking = false;
+            const int swipeThresholdPx = 96;
+            const int tapMoveThresholdPx = 24;
+            if (Math.Abs(releaseDx) >= swipeThresholdPx && Math.Abs(releaseDx) > Math.Abs(releaseDy))
+            {
+                horizontalSwipe = (releaseDx > 0 ? 1 : -1);
+                return;
+            }
+            if (this._touchMaxDistanceSquared <= tapMoveThresholdPx * tapMoveThresholdPx)
+            {
+                tapPressed = true;
+            }
+        }
+#endif
 
         // Token: 0x060003F3 RID: 1011 RVA: 0x0001BE84 File Offset: 0x0001A084
         private static bool BackPressed(InputState inputState)
@@ -898,6 +963,16 @@ namespace S2HD.Title
 
         // Token: 0x040004DF RID: 1247
         private bool _characterSelected;
+
+#if __ANDROID__
+        private bool _touchTracking;
+
+        private int _touchStartX;
+
+        private int _touchStartY;
+
+        private int _touchMaxDistanceSquared;
+#endif
 
         // Token: 0x040004E0 RID: 1248
         private static readonly EaseTimeline PressStartScaleXTimeline = new EaseTimeline(new EaseTimeline.Entry[]
