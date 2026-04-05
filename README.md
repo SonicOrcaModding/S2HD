@@ -18,7 +18,7 @@ Check [BUILD.md](BUILD.md)
 
 # Bugs
 
-- Lava in Hill Top Zone Act 1 Not Visible + It doesn't do damage (In the first part/part with the 2 moving platforms).
+- Lava in Hill Top Zone Act 1 Not Visible + It doesn't do damage (In the first part with the 2 moving platforms).
 - Rising Lava in Hill Top Act 2 doesn't even load/spawn so theres just a pit at the bottom. 
 - Shake effect & sfx in Hill Top Act 1 & 2 persists after the rising lava section (You have to die for it to stop??). 
 - Lava can unload its asset if the game thinks the cam is offscreen when it isnt.
