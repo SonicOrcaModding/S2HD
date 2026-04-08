@@ -1949,13 +1949,6 @@ class SDLMain implements Runnable {
         SDLActivity.nativeRunMain(library, function, arguments);
 
         Log.v("SDL", "Finished main function");
-
-        if (SDLActivity.mSingleton != null && !SDLActivity.mSingleton.isFinishing()) {
-            // Let's finish the Activity
-            SDLActivity.mSDLThread = null;
-            SDLActivity.mSingleton.finish();
-        }  // else: Activity is already being destroyed
-
     }
 }
 

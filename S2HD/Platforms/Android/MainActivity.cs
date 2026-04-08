@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Util;
 using SonicOrca;
+using SonicOrca.SDL2;
 using System;
 using System.IO;
 using System.Threading;
@@ -92,6 +93,18 @@ namespace S2HD
                 using (FileStream output = File.Create(targetPath))
                     input.CopyTo(output);
             }
+        }
+
+        protected override void OnPause()
+        {
+            base.OnPause();
+            SDL2WindowContext.AndroidSuspended = true;
+        }
+
+        protected override void OnResume()
+        {
+            base.OnResume();
+            SDL2WindowContext.AndroidSuspended = false;
         }
 
         private static void RunGameThread()
