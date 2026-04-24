@@ -112,6 +112,14 @@ internal class OptionsGameState : IGameState, IDisposable
       {
         this._viewPresenterHost.Update();
         this._viewPresenterHost.HandleInput();
+#if __ANDROID__
+        AndroidOptionsMenuTouchInput.ProcessFrame(
+          this._gameContext,
+          out int touchH,
+          out int touchV,
+          out bool touchTap);
+        this._viewPresenterHost.ApplyAndroidSwipeAndTap(touchH, touchV, touchTap);
+#endif
         AndroidOptionsTouchBackButton.TryHandleReleasedTap((SonicOrcaGameContext) this._gameContext, this._viewPresenterHost);
         yield return UpdateResult.Next();
       }

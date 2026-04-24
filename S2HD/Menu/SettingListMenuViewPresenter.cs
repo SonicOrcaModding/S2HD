@@ -272,6 +272,14 @@ label_42:
     this._tapRight = false;
   }
 
+  public void ApplyOrConfirm()
+  {
+    EventHandler<NavigateNextEventArgs> handler = this.NavigateNext;
+    if (handler == null)
+      return;
+    handler((object) this, new NavigateNextEventArgs((IMenuViewModel) null, (object) 4));
+  }
+
   public void NavigateUp()
   {
     if (this._selectedIndex <= 0)
@@ -299,7 +307,7 @@ label_42:
     this._audioContext.PlaySound(this._resources.NavigateSample);
   }
 
-  private void NavigateLeft()
+  public void NavigateLeft()
   {
     if (this._selectedIndex == -1)
       return;
@@ -324,7 +332,7 @@ label_42:
     }
   }
 
-  private void NavigateRight()
+  public void NavigateRight()
   {
     if (this._selectedIndex == -1)
       return;

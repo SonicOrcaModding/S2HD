@@ -53,6 +53,38 @@ internal class MenuViewPresenterHost
 
   public void HandleInput() => this._viewPresenter?.HandleInput();
 
+#if __ANDROID__
+  public void ApplyAndroidSwipeAndTap(int horizontal, int vertical, bool tap)
+  {
+    if (this._viewPresenter is ListMenuViewPresenter list)
+    {
+      if (vertical < 0)
+        list.NavigateUp();
+      else if (vertical > 0)
+        list.NavigateDown();
+      if (horizontal < 0)
+        list.NavigateUp();
+      else if (horizontal > 0)
+        list.NavigateDown();
+      if (tap)
+        list.ActivateSelection();
+    }
+    else if (this._viewPresenter is SettingListMenuViewPresenter settingList)
+    {
+      if (vertical < 0)
+        settingList.NavigateUp();
+      else if (vertical > 0)
+        settingList.NavigateDown();
+      if (horizontal < 0)
+        settingList.NavigateLeft();
+      else if (horizontal > 0)
+        settingList.NavigateRight();
+      if (tap)
+        settingList.ApplyOrConfirm();
+    }
+  }
+#endif
+
   public void RequestNavigateBack() => this.NavigateBackHandler((object) this, EventArgs.Empty);
 
   private void SetViewModel(IMenuViewModel viewModel)

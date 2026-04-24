@@ -6,6 +6,7 @@
 
 using SonicOrca;
 using SonicOrca.Audio;
+using SonicOrca.Geometry;
 using SonicOrca.Graphics;
 
 namespace S2HD
@@ -20,6 +21,7 @@ namespace S2HD
       private bool _enableShadows;
       private bool _enableWaterEffects;
       private bool _enableHeatEffects;
+      private bool _androidWidescreen;
 
       public double MusicVolume
       {
@@ -89,6 +91,20 @@ namespace S2HD
         }
       }
 
+      public bool AndroidWidescreen
+      {
+        get => this._androidWidescreen;
+        set
+        {
+          if (this._androidWidescreen == value)
+            return;
+          this._androidWidescreen = value;
+          this._config.SetProperty("mobile", "widescreen", value.ToString().ToLower());
+          this._config.Save();
+          this.ApplyDisplayAspect();
+        }
+      }
+
       public S2HDSettings(
         IniConfiguration config,
         AudioContext audioContext,
@@ -107,8 +123,24 @@ namespace S2HD
         this._enableShadows = config.GetPropertyBoolean("graphics", "shadows", true);
         this._enableWaterEffects = config.GetPropertyBoolean("graphics", "water_effects", true);
         this._enableHeatEffects = config.GetPropertyBoolean("graphics", "heat_effects");
+        this._androidWidescreen = config.GetPropertyBoolean("mobile", "widescreen");
       }
 
-      public void Apply() => this._windowContext.Mode = this.Mode;
+      public void Apply()
+      {
+        this._windowContext.Mode = this.Mode;
+        this.ApplyDisplayAspect();
+      }
+
+      internal void ApplyDisplayAspect()
+      {
+#if __ANDROID__
+        this._windowContext.AspectRatio = this._androidWidescreen
+          ? new Vector2i(0, 0)
+          : new Vector2i(16, 9);
+#else
+        this._windowContext.AspectRatio = new Vector2i(16, 9);
+#endif
+      }
     }
 }

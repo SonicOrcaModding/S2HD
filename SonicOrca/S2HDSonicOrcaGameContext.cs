@@ -62,7 +62,6 @@ namespace SonicOrca
         this.Settings = new S2HDSettings(this.Configuration, this.Audio, this.Window);
         this.Settings.Apply();
         this.Window.WindowTitle = "Sonic 2 HD";
-        this.Window.AspectRatio = new Vector2i(16 /*0x10*/, 9);
         string contentRoot = GamePaths.ContentRootDirectory;
         this.LoadResourceFiles(Path.Combine(contentRoot, "data"));
         if (bool.Parse(this.Configuration.GetProperty("general", "use_mods", "true")))

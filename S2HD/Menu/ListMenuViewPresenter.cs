@@ -162,6 +162,8 @@ label_21:
     navigateBack((object) this, EventArgs.Empty);
   }
 
+  public void ActivateSelection() => this.NavigateSelect();
+
   private void NavigateSelect()
   {
     IMenuItem menuItem = this._items[this.HighlightedIndex];
@@ -172,7 +174,7 @@ label_21:
     navigateNext((object) this, e);
   }
 
-  private void NavigateUp()
+  public void NavigateUp()
   {
     if (this.HighlightedIndex <= 0)
       return;
@@ -180,7 +182,7 @@ label_21:
     this.PlayNavigationSound();
   }
 
-  private void NavigateDown()
+  public void NavigateDown()
   {
     if (this.HighlightedIndex >= this._items.Length - 1)
       return;

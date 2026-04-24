@@ -39,11 +39,15 @@ internal class MenuViewFactory
 
   public IMenuViewModel GetOptionsView()
   {
-    return (IMenuViewModel) new ListMenuViewModel((IEnumerable<IMenuItem>) new IMenuItem[2]
+    List<IMenuItem> optionItems = new List<IMenuItem>(3)
     {
       (IMenuItem) new MenuItem("AUDIO", (IMenuViewModel) this.GetAudioOptions(), (object) 6),
       (IMenuItem) new MenuItem("VIDEO", (IMenuViewModel) this.GetVideoOptions(), (object) 7)
-    }, (object) 5);
+    };
+#if __ANDROID__
+    optionItems.Add((IMenuItem) new MenuItem("MOBILE", (IMenuViewModel) this.GetMobileOptions(), (object) 8));
+#endif
+    return (IMenuViewModel) new ListMenuViewModel((IEnumerable<IMenuItem>) optionItems, (object) 5);
   }
 
   public ISettingListMenuViewModel GetAudioOptions()
@@ -52,6 +56,15 @@ internal class MenuViewFactory
     {
       (ISetting) new MenuViewFactory.MusicSetting(this._gameContext.Settings),
       (ISetting) new MenuViewFactory.SoundSetting(this._gameContext.Settings)
+    }, (object) 5);
+  }
+
+  public ISettingListMenuViewModel GetMobileOptions()
+  {
+    S2HDSettings settings = this._gameContext.Settings;
+    return (ISettingListMenuViewModel) new SettingListMenuViewModel((IEnumerable<ISetting>) new ISetting[1]
+    {
+      (ISetting) new OnOffOptionSetting("WIDESCREEN", (Func<bool>) (() => settings.AndroidWidescreen), (Action<bool>) (value => settings.AndroidWidescreen = value))
     }, (object) 5);
   }
 
