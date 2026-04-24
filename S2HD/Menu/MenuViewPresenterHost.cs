@@ -53,6 +53,8 @@ internal class MenuViewPresenterHost
 
   public void HandleInput() => this._viewPresenter?.HandleInput();
 
+  public void RequestNavigateBack() => this.NavigateBackHandler((object) this, EventArgs.Empty);
+
   private void SetViewModel(IMenuViewModel viewModel)
   {
     if (this._viewModel != null)

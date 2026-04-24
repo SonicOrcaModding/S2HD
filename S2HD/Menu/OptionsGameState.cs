@@ -112,6 +112,7 @@ internal class OptionsGameState : IGameState, IDisposable
       {
         this._viewPresenterHost.Update();
         this._viewPresenterHost.HandleInput();
+        AndroidOptionsTouchBackButton.TryHandleReleasedTap((SonicOrcaGameContext) this._gameContext, this._viewPresenterHost);
         yield return UpdateResult.Next();
       }
       while ((double) this._fadeOutOpacity > 0.0)
@@ -142,6 +143,7 @@ internal class OptionsGameState : IGameState, IDisposable
     Renderer renderer = this._gameContext.Renderer;
     this.DrawBackground(renderer);
     this.DrawViewPresenterHost(renderer);
+    AndroidOptionsTouchBackButton.DrawBackButton(renderer, (SonicOrcaGameContext) this._gameContext);
     this.DrawButtonBar(renderer);
     this.DrawFadeOut(renderer);
   }

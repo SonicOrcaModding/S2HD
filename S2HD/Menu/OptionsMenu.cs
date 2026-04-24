@@ -148,6 +148,7 @@ internal class OptionsMenu : IDisposable
     this._viewPresenterHost.Bounds = Rectanglei.FromLTRB(this._circleBounds.Left, this._circleBounds.Top + 60, this._circleBounds.Right, this._circleBounds.Bottom);
     this._viewPresenterHost.Update();
     this._viewPresenterHost.HandleInput();
+    AndroidOptionsTouchBackButton.TryHandleReleasedTap((SonicOrcaGameContext) this._gameContext, this._viewPresenterHost);
   }
 
   private void NavigateNextHandler(object sender, NavigateNextEventArgs e)
@@ -276,6 +277,7 @@ internal class OptionsMenu : IDisposable
     g.RenderEllipse(new Colour(88, 255, 255, 255), pauseRect.Centre, pauseRect.Width * 0.35, pauseRect.Width * 0.5, 48);
     g.RenderLine(new Colour(170, 255, 255, 255), new Vector2(pauseRect.Centre.X - pauseRect.Width * 0.12, pauseRect.Centre.Y - pauseRect.Height * 0.16), new Vector2(pauseRect.Centre.X - pauseRect.Width * 0.12, pauseRect.Centre.Y + pauseRect.Height * 0.16), 10.0);
     g.RenderLine(new Colour(170, 255, 255, 255), new Vector2(pauseRect.Centre.X + pauseRect.Width * 0.12, pauseRect.Centre.Y - pauseRect.Height * 0.16), new Vector2(pauseRect.Centre.X + pauseRect.Width * 0.12, pauseRect.Centre.Y + pauseRect.Height * 0.16), 10.0);
+    AndroidOptionsTouchBackButton.DrawBackButton(renderer, (SonicOrcaGameContext) this._gameContext);
   }
 
   public void Show()
