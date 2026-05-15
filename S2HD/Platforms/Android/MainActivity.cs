@@ -52,12 +52,9 @@ namespace S2HD
         private void EnsureBundledContentExtracted()
         {
             string contentRoot = Path.Combine(GetAndroidAppFilesRoot(), "SonicOrca", "Content");
-            string dataSentinel = Path.Combine(contentRoot, "data", "sonicorca.dat");
-            if (!File.Exists(dataSentinel))
-            {
-                ExtractAssetDirectory("data", Path.Combine(contentRoot, "data"));
-            }
+            ExtractAssetDirectory("data", Path.Combine(contentRoot, "data"));
             ExtractAssetDirectory("shaders", Path.Combine(contentRoot, "shaders"));
+            ExtractAssetDirectory("mobile_assets", Path.Combine(contentRoot, "data", "mobile_assets"));
 
             GamePaths.ContentRootDirectory = contentRoot;
             Log.Info("S2HD", "Bundled content root: {0}", contentRoot);

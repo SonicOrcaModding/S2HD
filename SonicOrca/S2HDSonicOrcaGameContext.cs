@@ -50,6 +50,16 @@ namespace SonicOrca
       public override void Initialise()
       {
         base.Initialise();
+#if __ANDROID__
+        try
+        {
+          SonicOrca.Resources.ResourceType.FromIdentifier(SonicOrca.Resources.ResourceTypeIdentifier.TexturePNG);
+        }
+        catch
+        {
+          new SonicOrca.HelperLibraries.Png.PngResourceType();
+        }
+#endif
         this.CommandLineArguments = new CommandLineArguments((IEnumerable<string>) Program.CommandLineArguments);
         this.Configuration = Program.Configuration;
         this.UserDataDirectory = Program.UserDataDirectory;
@@ -247,6 +257,9 @@ namespace SonicOrca
 
       protected override void OnUpdateStep()
       {
+#if __ANDROID__
+        AndroidTouchControlAssets.Preload((SonicOrcaGameContext) this);
+#endif
         this.Console.Update();
         this.NetworkManager.Update();
         if (!this._gameStateUpdater.Update())
@@ -315,7 +328,51 @@ namespace SonicOrca
         if (!Directory.Exists(inputDirectory))
           return;
         foreach (string file in Directory.GetFiles(inputDirectory, "*.dat", SearchOption.AllDirectories))
+        {
+#if __ANDROID__
+          ResourceTree scanned = null;
+          try
+          {
+            scanned = new ResourceFile(file).Scan();
+            string[] mobileKeys = scanned
+              .GetNodeListing()
+              .Keys
+              .Where(k => k != null && k.IndexOf("/MOBILE/", StringComparison.OrdinalIgnoreCase) >= 0)
+              .OrderBy(k => k)
+              .ToArray();
+            if (mobileKeys.Length > 0)
+            {
+              global::Android.Util.Log.Info("S2HD", "[MobileResources] Found {0} key(s) in .dat: {1}", mobileKeys.Length, file);
+              foreach (string k in mobileKeys.Take(40))
+                global::Android.Util.Log.Info("S2HD", "[MobileResources]   {0}", k);
+              if (mobileKeys.Length > 40)
+                global::Android.Util.Log.Info("S2HD", "[MobileResources]   ... (+{0} more)", mobileKeys.Length - 40);
+            }
+          }
+          catch
+          {
+            scanned = null;
+          }
+          if (scanned != null)
+          {
+            this.ResourceTree.MergeWith(scanned);
+            continue;
+          }
+#endif
           this.ResourceTree.MergeWith(new ResourceFile(file).Scan());
+        }
+
+#if __ANDROID__
+        try
+        {
+          int mobileKeyCount = this.ResourceTree
+            .GetNodeListing()
+            .Keys
+            .Count(k => k != null && k.IndexOf("/MOBILE/", StringComparison.OrdinalIgnoreCase) >= 0);
+          global::Android.Util.Log.Info("S2HD", "[MobileResources] /MOBILE/ keys in ResourceTree after loading '{0}': {1}", inputDirectory, mobileKeyCount);
+        }
+        catch { }
+#endif
       }
 
       protected override Renderer CreateRenderer() => (Renderer) new TheRenderer(this.Window);

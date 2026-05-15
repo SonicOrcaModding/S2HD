@@ -1,4 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
+// Decompiled with JetBrains decompiler
 // Type: S2HD.Menu.OptionsMenu
 // Assembly: S2HD, Version=2.0.1012.10521, Culture=neutral, PublicKeyToken=null
 // MVID: 18631A0F-16CF-4E18-8563-1EC5E54750D6
@@ -271,18 +271,41 @@ internal class OptionsMenu : IDisposable
     double jumpZoneX = viewport.X + viewport.Width * TouchJumpRegionStartFactor;
     double dpadCenterX = viewport.X + viewport.Width * TouchDpadXFactor;
     double dpadCenterY = viewport.Y + viewport.Height * TouchDpadYFactor;
-    double pauseSize = Math.Min(viewport.Width, viewport.Height) * TouchPauseSizeFactor;
     I2dRenderer g = renderer.Get2dRenderer();
-    g.RenderQuad(new Colour(44, 255, 255, 255), new Rectangle(viewport.X, bottomZoneY, leftZoneX - viewport.X, viewport.Bottom - bottomZoneY));
-    g.RenderQuad(new Colour(44, 255, 255, 255), new Rectangle(jumpZoneX, bottomZoneY, viewport.Right - jumpZoneX, viewport.Bottom - bottomZoneY));
-    g.RenderEllipse(new Colour(64, 255, 255, 255), new Vector2(dpadCenterX, dpadCenterY), 60.0, 140.0, 64);
-    g.RenderLine(new Colour(120, 255, 255, 255), new Vector2(dpadCenterX - 96.0, dpadCenterY), new Vector2(dpadCenterX + 96.0, dpadCenterY), 8.0);
-    g.RenderLine(new Colour(120, 255, 255, 255), new Vector2(dpadCenterX, dpadCenterY - 96.0), new Vector2(dpadCenterX, dpadCenterY + 96.0), 8.0);
-    g.RenderEllipse(new Colour(72, 255, 255, 255), new Vector2(jumpZoneX + (viewport.Right - jumpZoneX) * 0.5, bottomZoneY + (viewport.Bottom - bottomZoneY) * 0.5), 80.0, 148.0, 64);
-    Rectangle pauseRect = new Rectangle(viewport.Right - pauseSize - 24.0, viewport.Y + 24.0, pauseSize, pauseSize);
-    g.RenderEllipse(new Colour(88, 255, 255, 255), pauseRect.Centre, pauseRect.Width * 0.35, pauseRect.Width * 0.5, 48);
-    g.RenderLine(new Colour(170, 255, 255, 255), new Vector2(pauseRect.Centre.X - pauseRect.Width * 0.12, pauseRect.Centre.Y - pauseRect.Height * 0.16), new Vector2(pauseRect.Centre.X - pauseRect.Width * 0.12, pauseRect.Centre.Y + pauseRect.Height * 0.16), 10.0);
-    g.RenderLine(new Colour(170, 255, 255, 255), new Vector2(pauseRect.Centre.X + pauseRect.Width * 0.12, pauseRect.Centre.Y - pauseRect.Height * 0.16), new Vector2(pauseRect.Centre.X + pauseRect.Width * 0.12, pauseRect.Centre.Y + pauseRect.Height * 0.16), 10.0);
+    AndroidTouchControlAssets.EnsureLoaded((SonicOrcaGameContext) this._gameContext);
+    if (AndroidTouchControlAssets.Available)
+    {
+      g.BlendMode = BlendMode.Alpha;
+      g.Colour = Colours.White;
+
+      double baseSize = Math.Min(viewport.Width, viewport.Height) * 0.26;
+      Rectangle dpadBaseRect = new Rectangle(dpadCenterX - baseSize / 2.0, dpadCenterY - baseSize / 2.0, baseSize, baseSize);
+      g.RenderTexture(AndroidTouchControlAssets.DpadBottom, dpadBaseRect);
+
+      Vector2 axis = this._gameContext.Input.CurrentState.GamePad[0].LeftAxis;
+      double stickRadius = baseSize * 0.18;
+      Vector2 stickOffset = new Vector2(axis.X * stickRadius, axis.Y * stickRadius);
+      Rectangle dpadTopRect = new Rectangle(
+        dpadBaseRect.X + (dpadBaseRect.Width - baseSize * 0.62) / 2.0 + stickOffset.X,
+        dpadBaseRect.Y + (dpadBaseRect.Height - baseSize * 0.62) / 2.0 + stickOffset.Y,
+        baseSize * 0.62,
+        baseSize * 0.62);
+      g.RenderTexture(AndroidTouchControlAssets.DpadTop, dpadTopRect);
+
+      double jumpSize = Math.Min(viewport.Width, viewport.Height) * 0.30;
+      Vector2 jumpCentre = new Vector2(jumpZoneX + (viewport.Right - jumpZoneX) * 0.5, bottomZoneY + (viewport.Bottom - bottomZoneY) * 0.5);
+      Rectangle jumpRect = new Rectangle(jumpCentre.X - jumpSize / 2.0, jumpCentre.Y - jumpSize / 2.0, jumpSize, jumpSize);
+      g.RenderTexture(AndroidTouchControlAssets.ButtonMain, jumpRect);
+    }
+    else
+    {
+      g.RenderQuad(new Colour(44, 255, 255, 255), new Rectangle(viewport.X, bottomZoneY, leftZoneX - viewport.X, viewport.Bottom - bottomZoneY));
+      g.RenderQuad(new Colour(44, 255, 255, 255), new Rectangle(jumpZoneX, bottomZoneY, viewport.Right - jumpZoneX, viewport.Bottom - bottomZoneY));
+      g.RenderEllipse(new Colour(64, 255, 255, 255), new Vector2(dpadCenterX, dpadCenterY), 60.0, 140.0, 64);
+      g.RenderLine(new Colour(120, 255, 255, 255), new Vector2(dpadCenterX - 96.0, dpadCenterY), new Vector2(dpadCenterX + 96.0, dpadCenterY), 8.0);
+      g.RenderLine(new Colour(120, 255, 255, 255), new Vector2(dpadCenterX, dpadCenterY - 96.0), new Vector2(dpadCenterX, dpadCenterY + 96.0), 8.0);
+      g.RenderEllipse(new Colour(72, 255, 255, 255), new Vector2(jumpZoneX + (viewport.Right - jumpZoneX) * 0.5, bottomZoneY + (viewport.Bottom - bottomZoneY) * 0.5), 80.0, 148.0, 64);
+    }
     AndroidOptionsTouchBackButton.DrawBackButton(renderer, (SonicOrcaGameContext) this._gameContext);
   }
 

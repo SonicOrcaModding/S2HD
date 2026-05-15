@@ -104,12 +104,22 @@ internal static class AndroidOptionsTouchBackButton
     I2dRenderer g = renderer.Get2dRenderer();
     Rectangle logicalVp = GetLogicalViewport(gameContext);
     Rectangle backRect = GetBackButtonRect(logicalVp);
-    g.RenderEllipse(new Colour(88, 255, 255, 255), backRect.Centre, backRect.Width * 0.35, backRect.Width * 0.5, 48);
-    Vector2 c = backRect.Centre;
-    double w = backRect.Width;
-    double h = backRect.Height;
-    g.RenderLine(new Colour(170, 255, 255, 255), new Vector2(c.X + w * 0.12, c.Y - h * 0.16), new Vector2(c.X - w * 0.08, c.Y), 10.0);
-    g.RenderLine(new Colour(170, 255, 255, 255), new Vector2(c.X - w * 0.08, c.Y), new Vector2(c.X + w * 0.12, c.Y + h * 0.16), 10.0);
+    AndroidTouchControlAssets.EnsureLoaded(gameContext);
+    if (AndroidTouchControlAssets.Available && AndroidTouchControlAssets.ButtonBack != null)
+    {
+      g.BlendMode = BlendMode.Alpha;
+      g.Colour = Colours.White;
+      g.RenderTexture(AndroidTouchControlAssets.ButtonBack, backRect);
+    }
+    else
+    {
+      g.RenderEllipse(new Colour(88, 255, 255, 255), backRect.Centre, backRect.Width * 0.35, backRect.Width * 0.5, 48);
+      Vector2 c = backRect.Centre;
+      double w = backRect.Width;
+      double h = backRect.Height;
+      g.RenderLine(new Colour(170, 255, 255, 255), new Vector2(c.X + w * 0.12, c.Y - h * 0.16), new Vector2(c.X - w * 0.08, c.Y), 10.0);
+      g.RenderLine(new Colour(170, 255, 255, 255), new Vector2(c.X - w * 0.08, c.Y), new Vector2(c.X + w * 0.12, c.Y + h * 0.16), 10.0);
+    }
   }
 #else
   public static void TryHandleReleasedTap(SonicOrcaGameContext gameContext, MenuViewPresenterHost host)
