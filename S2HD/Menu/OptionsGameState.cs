@@ -118,6 +118,21 @@ internal class OptionsGameState : IGameState, IDisposable
           out int touchH,
           out int touchV,
           out bool touchTap);
+        if (touchTap && this._gameContext.Input.Released.Mouse.Left)
+        {
+          if (AndroidOptionsTouchBackButton.TryWindowPixelsToLogical(
+            (SonicOrcaGameContext) this._gameContext,
+            this._gameContext.Input.Released.Mouse.X,
+            this._gameContext.Input.Released.Mouse.Y,
+            out double lx,
+            out double ly))
+          {
+            Rectangle backRect = AndroidOptionsTouchBackButton.GetBackButtonRect(
+              AndroidOptionsTouchBackButton.GetLogicalViewport((SonicOrcaGameContext) this._gameContext));
+            if (lx >= backRect.X && lx < backRect.Right && ly >= backRect.Y && ly < backRect.Bottom)
+              touchTap = false;
+          }
+        }
         this._viewPresenterHost.ApplyAndroidSwipeAndTap(touchH, touchV, touchTap);
 #endif
         AndroidOptionsTouchBackButton.TryHandleReleasedTap((SonicOrcaGameContext) this._gameContext, this._viewPresenterHost);
