@@ -204,6 +204,7 @@ namespace SonicOrca
         if (!this._loaded)
           return;
         Renderer renderer = this._gameContext.Renderer;
+        renderer.Get2dRenderer().ModelMatrix = Matrix4.Identity;
         this.DrawIntroText(renderer);
         this.Background.Draw(renderer);
         this.DrawShootingStar(renderer);
