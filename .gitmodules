@@ -13,3 +13,6 @@
 [submodule "external/SonicOrca"]
 	path = external/SonicOrca
 	url = https://github.com/SonicOrcaModding/SonicOrca
+[submodule "Shaders"]
+	path = Shaders
+	url = https://github.com/SonicOrcaModding/SonicOrca.Shaders
