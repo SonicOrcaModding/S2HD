@@ -31,6 +31,7 @@
     <AndroidAsset Include="Shaders/**" LogicalName="shaders/%(RecursiveDir)%(Filename)%(Extension)" />
     <AndroidJavaSource Remove="S2HD/Platforms/Android/java/**/*.java" />
     <AndroidJavaSource Include="S2HD/Platforms/Android/java/org/libsdl/app/*.java" Bind="false" />
+    <AndroidResource Include="S2HD/Platforms/Android/Resources/**" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
