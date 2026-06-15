@@ -45,7 +45,18 @@ namespace S2HD
 
             EnsureBundledContentExtracted();
 
-            var thread = new Thread(RunGameThread) { Name = "S2HDGame" };
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    Program.StartFromAndroid();
+                    RunOnUiThread(() => FinishAffinity());
+                }
+                catch (Exception ex)
+                {
+                    Log.Error("S2HD", "Managed exception on game thread: " + ex);
+                }
+            }) { Name = "S2HDGame" };
             thread.Start();
         }
 
@@ -101,19 +112,15 @@ namespace S2HD
         protected override void OnResume()
         {
             base.OnResume();
-            SDL2WindowContext.AndroidSuspended = false;
         }
 
-        private static void RunGameThread()
+        public override void OnWindowFocusChanged(bool hasFocus)
         {
-            try
-            {
-                Program.StartFromAndroid();
-            }
-            catch (Exception ex)
-            {
-                Log.Error("S2HD", "Managed exception on game thread: " + ex);
-            }
+            base.OnWindowFocusChanged(hasFocus);
+            if (hasFocus)
+                SDL2WindowContext.AndroidSuspended = false;
+            else
+                SDL2WindowContext.AndroidSuspended = true;
         }
     }
 }
