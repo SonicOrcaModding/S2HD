@@ -22,7 +22,7 @@ namespace S2HD
       public const string BuildConfigurationName = "RELEASE";
       public static Version AppVersion = Assembly.GetExecutingAssembly().GetName().Version;
       public static string AppArchitecture = Environment.Is64BitProcess ? "x64" : "x86";
-#if __ANDROID__
+#if __ANDROID__ || __IOS__
       public static Version AppMinOpenGLVersion = new Version(3, 0);
 #else
       public static Version AppMinOpenGLVersion = new Version(3, 3);
@@ -36,6 +36,11 @@ namespace S2HD
 
       public static void SetAndroidUserDataDirectory(string directory) => _androidUserDataDirectory = directory;
 #endif
+#if __IOS__
+      private static string _iOSUserDataDirectory;
+
+      public static void SetIOSUserDataDirectory(string directory) => _iOSUserDataDirectory = directory;
+#endif
 
       public static string UserDataDirectory
       {
@@ -45,6 +50,10 @@ namespace S2HD
           if (!string.IsNullOrEmpty(_androidUserDataDirectory))
             return _androidUserDataDirectory;
           return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SonicOrca");
+#elif __IOS__
+          if (!string.IsNullOrEmpty(_iOSUserDataDirectory))
+            return _iOSUserDataDirectory;
+          return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "SonicOrca");
 #else
           return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SonicOrca");
 #endif
@@ -55,7 +64,7 @@ namespace S2HD
 
       public static IReadOnlyList<string> CommandLineArguments { get; private set; }
 
-#if !__ANDROID__
+#if !__ANDROID__ && !__IOS__
       private static void Main(string[] args)
       {
         Program.CommandLineArguments = (IReadOnlyList<string>) args;
@@ -75,6 +84,16 @@ namespace S2HD
         global::Android.Util.Log.Info("S2HD", "Config and logs: {0}", Path.Combine(Program.UserDataDirectory, Program.IniConfigurationPath));
         global::Android.Util.Log.Info("S2HD", "Log file: {0}", Program.LogPath);
         global::Android.Util.Log.Info("S2HD", "Game content root (data/shaders): {0}", GamePaths.ContentRootDirectory);
+        Program.LoadConfiguration();
+        Program.RunOrFocusGame();
+      }
+#endif
+#if __IOS__
+      public static void StartFromiOS()
+      {
+        Program.CommandLineArguments = (IReadOnlyList<string>)new[] { "--nologos" };
+        Program.EnsureUserDataDirectoryExists();
+        Program.WriteLogHeader();
         Program.LoadConfiguration();
         Program.RunOrFocusGame();
       }
@@ -107,7 +126,7 @@ namespace S2HD
 
       private static void RunOrFocusGame()
       {
-#if __ANDROID__
+#if __ANDROID__ || __IOS__
         Program.RunGame();
 #else
         bool createdNew;
@@ -188,7 +207,7 @@ namespace S2HD
         if (!(openGlVersion < Program.AppMinOpenGLVersion))
           return true;
         Trace.WriteLine("OpenGL version too low");
-#if __ANDROID__
+#if __ANDROID__ || __IOS__
         Program.ShowErrorMessageBox($"OpenGL ES {Program.AppMinOpenGLVersion.Major}.{Program.AppMinOpenGLVersion.Minor} or later is required.");
 #else
         Program.ShowErrorMessageBox($"OpenGL {Program.AppMinOpenGLVersion.Major}.{Program.AppMinOpenGLVersion.Minor} or later is required.");
@@ -202,6 +221,9 @@ namespace S2HD
         Console.Error.WriteLine(text);
 #if __ANDROID__
         global::Android.Util.Log.Error("S2HD", text);
+#endif
+#if __IOS__
+        AppDelegate.ShowFatalError(text);
 #endif
 #if WINDOWS_MESSAGE_BOX
         WindowsShell.ShowMessageBox(text, "SonicOrca");

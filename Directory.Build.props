@@ -7,4 +7,8 @@
     <SupportedOSPlatformVersion>23</SupportedOSPlatformVersion>
     <AndroidGenerateResourceDesigner>false</AndroidGenerateResourceDesigner>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net7.0-ios'">
+    <DefineConstants>$(DefineConstants);__IOS__</DefineConstants>
+    <SupportedOSPlatformVersion>14.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
 </Project>

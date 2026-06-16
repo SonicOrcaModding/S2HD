@@ -1,6 +1,6 @@
 using SonicOrca;
 using SonicOrca.Drawing.Renderers;
-#if __ANDROID__
+#if __ANDROID__ || __IOS__
 using SonicOrca.Geometry;
 using SonicOrca.Graphics;
 #endif
@@ -9,7 +9,7 @@ namespace S2HD.Menu;
 
 internal static class AndroidOptionsTouchBackButton
 {
-#if __ANDROID__
+#if __ANDROID__ || __IOS__
   private const double TouchPauseSizeFactor = 72.0 / 320.0;
 
   public static Rectangle GetLogicalViewport(SonicOrcaGameContext gameContext)

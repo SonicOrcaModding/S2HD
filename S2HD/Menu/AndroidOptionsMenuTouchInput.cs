@@ -1,4 +1,4 @@
-#if __ANDROID__
+#if __ANDROID__ || __IOS__
 using System;
 using SonicOrca;
 using SonicOrca.Input;

@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net10.0;net10.0-android</TargetFrameworks>
+    <TargetFrameworks>net10.0;net10.0-android;net7.0-ios</TargetFrameworks>
+    <TargetFrameworks Condition="'$(BuildingForiOS)' == 'true'">net7.0-ios</TargetFrameworks>
     <AssemblyName>S2HD</AssemblyName>
-    <LangVersion>12</LangVersion>
+    <LangVersion>preview</LangVersion>
     <Nullable>disable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -24,6 +25,20 @@
     <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
     <RunAOTCompilation>false</RunAOTCompilation>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net7.0-ios'">
+    <ApplicationId>org.sonicorca.s2hd</ApplicationId>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+    <SupportedOSPlatformVersion>14.0</SupportedOSPlatformVersion>
+    <MtouchPlistFile>S2HD/Platforms/iOS/Info.plist</MtouchPlistFile>
+    <MtouchLink>SdkOnly</MtouchLink>
+    <EnableCodeSigning>false</EnableCodeSigning>
+    <CodesignKey></CodesignKey>
+    <CodesignProvision></CodesignProvision>
+    <CodesignEntitlements></CodesignEntitlements>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <MtouchExtraArgs>--gcc_flags="-framework AVFoundation -framework AudioToolbox -framework QuartzCore -framework CoreHaptics -framework Metal"</MtouchExtraArgs>
+  </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
     <AndroidAsset Include="data/**" />
@@ -32,6 +47,15 @@
     <AndroidJavaSource Remove="S2HD/Platforms/Android/java/**/*.java" />
     <AndroidJavaSource Include="S2HD/Platforms/Android/java/org/libsdl/app/*.java" Bind="false" />
     <AndroidResource Include="S2HD/Platforms/Android/Resources/**" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0-ios'">
+    <BundleResource Include="data/**" />
+    <BundleResource Include="mobile_assets/**">
+      <Link>data/mobile_assets/%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </BundleResource>
+    <BundleResource Include="Shaders/**">
+      <Link>shaders/%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </BundleResource>
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -76,8 +100,40 @@
   <ItemGroup Condition="'$(TargetFramework)' != 'net10.0-android'">
     <Compile Remove="S2HD\Platforms\Android\**\*.cs" />
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net7.0-ios'">
+    <Compile Remove="S2HD\Platforms\iOS\**\*.cs" />
+  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android' And Exists('S2HD/Platforms/Android/libs/arm64-v8a/libSDL2.so')">
     <AndroidNativeLibrary Include="S2HD/Platforms/Android/libs/arm64-v8a/libSDL2.so" Abi="arm64-v8a" />
+  </ItemGroup>
+  <Target Name="_RemoveUnsupportedIOSFrameworks" AfterTargets="_LoadLinkerOutput" Condition="'$(TargetFramework)' == 'net7.0-ios'">
+    <ItemGroup>
+      <_LinkerFrameworks Remove="ApplicationServices" />
+      <_LinkerFrameworks Remove="OpenGL" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0-ios' And '$(RuntimeIdentifier)' == 'ios-arm64' And Exists('S2HD/Platforms/iOS/libs/libSDL2Stubs.a')">
+    <NativeReference Include="S2HD/Platforms/iOS/libs/libSDL2Stubs.a">
+      <Kind>Static</Kind>
+      <SmartLink>False</SmartLink>
+    </NativeReference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0-ios' And '$(RuntimeIdentifier)' == 'ios-arm64' And Exists('S2HD/Platforms/iOS/libs/libSDL2.a')">
+    <NativeReference Include="S2HD/Platforms/iOS/libs/libSDL2.a">
+      <Kind>Static</Kind>
+      <SmartLink>False</SmartLink>
+      <Frameworks>CoreVideo CoreAudio CoreMotion CoreGraphics UIKit OpenGLES GameController CoreBluetooth AVFoundation AudioToolbox</Frameworks>
+      <LinkerFlags>-framework AVFoundation -framework AudioToolbox</LinkerFlags>
+    </NativeReference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net7.0-ios' And '$(RuntimeIdentifier)' != 'ios-arm64' And Exists('S2HD/Platforms/iOS/libs/libSDL2_sim.a')">
+    <NativeReference Include="S2HD/Platforms/iOS/libs/libSDL2_sim.a">
+      <Kind>Static</Kind>
+      <SmartLink>False</SmartLink>
+      <Frameworks>CoreVideo CoreAudio CoreMotion CoreGraphics UIKit OpenGLES GameController CoreBluetooth AVFoundation AudioToolbox</Frameworks>
+      <LinkerFlags>-framework AVFoundation -framework AudioToolbox</LinkerFlags>
+    </NativeReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Collections.Immutable" Version="10.0.0" />
