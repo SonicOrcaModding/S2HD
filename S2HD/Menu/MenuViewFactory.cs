@@ -44,7 +44,7 @@ internal class MenuViewFactory
       (IMenuItem) new MenuItem("AUDIO", (IMenuViewModel) this.GetAudioOptions(), (object) 6),
       (IMenuItem) new MenuItem("VIDEO", (IMenuViewModel) this.GetVideoOptions(), (object) 7)
     };
-#if __ANDROID__
+#if __ANDROID__ || __IOS__
     optionItems.Add((IMenuItem) new MenuItem("MOBILE", (IMenuViewModel) this.GetMobileOptions(), (object) 8));
 #endif
     return (IMenuViewModel) new ListMenuViewModel((IEnumerable<IMenuItem>) optionItems, (object) 5);

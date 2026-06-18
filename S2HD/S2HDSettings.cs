@@ -134,7 +134,7 @@ namespace S2HD
 
       internal void ApplyDisplayAspect()
       {
-#if __ANDROID__
+#if __ANDROID__ || __IOS__
         this._windowContext.AspectRatio = this._androidWidescreen
           ? new Vector2i(0, 0)
           : new Vector2i(16, 9);

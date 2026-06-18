@@ -190,7 +190,7 @@ internal class OptionsMenu : IDisposable
         this.ResetCompositions();
         this._currentComposition = this._subMenuVideoPopInComposition;
         break;
-#if __ANDROID__
+#if __ANDROID__ || __IOS__
       case 8:
         this.ResetCompositions();
         this._currentComposition = this._subMenuOptionsPopInComposition;

@@ -78,11 +78,17 @@ namespace S2HD
                     window.RootViewController = new UIViewController();
                     window.MakeKeyAndVisible();
 
-                    string truncated = message.Length > 800
-                        ? message.Substring(0, 800) + "…" : message;
+                    string truncated = message.Length > 3500
+                        ? message.Substring(0, 3500) + "…" : message;
                     var alert = UIAlertController.Create(
                         "S2HD Error", truncated, UIAlertControllerStyle.Alert);
-                    alert.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, _ =>
+                    alert.AddAction(UIAlertAction.Create("Copy", UIAlertActionStyle.Default, _ =>
+                    {
+                        UIPasteboard.General.String = message;
+                        window.Hidden = true;
+                        done.Set();
+                    }));
+                    alert.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Cancel, _ =>
                     {
                         window.Hidden = true;
                         done.Set();

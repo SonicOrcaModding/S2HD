@@ -124,7 +124,7 @@ namespace S2HD.Title
             {
                 horizontalInput = Math.Sign(controller.DirectionLeft.X);
             }
-#if __ANDROID__
+#if __ANDROID__ || __IOS__
             bool tapPressed;
             int swipeHorizontal;
             this.GetAndroidTouchMenuInput(out tapPressed, out swipeHorizontal);
@@ -281,7 +281,7 @@ namespace S2HD.Title
             }
         }
 
-#if __ANDROID__
+#if __ANDROID__ || __IOS__
         private void GetAndroidTouchMenuInput(out bool tapPressed, out int horizontalSwipe)
         {
             tapPressed = false;
@@ -964,7 +964,7 @@ namespace S2HD.Title
         // Token: 0x040004DF RID: 1247
         private bool _characterSelected;
 
-#if __ANDROID__
+#if __ANDROID__ || __IOS__
         private bool _touchTracking;
 
         private int _touchStartX;
