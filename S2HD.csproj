@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>$(SonicOrcaTargetFramework)</TargetFramework>
     <AssemblyName>S2HD</AssemblyName>
     <LangVersion>12</LangVersion>
     <Nullable>disable</Nullable>
@@ -58,12 +58,19 @@
   <ItemGroup>
     <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(Platform)' != 'Switch'">
     <ProjectReference Include="external\SonicOrca.Common\SonicOrca.Common.csproj" />
     <ProjectReference Include="external\SonicOrca.Drawing\SonicOrca.Drawing.csproj" />
     <ProjectReference Include="external\SonicOrca.Resources\SonicOrca.Resources.csproj" />
     <ProjectReference Include="external\SonicOrca.SDL2\SonicOrca.SDL2.csproj" />
     <ProjectReference Include="external\SonicOrca\SonicOrca.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Platform)' == 'Switch'">
+    <Reference Include="SonicOrca.Common" HintPath="external\SonicOrca.Common\bin\Switch\$(Configuration)\SonicOrca.Common.dll" />
+    <Reference Include="SonicOrca.Drawing" HintPath="external\SonicOrca.Drawing\bin\Switch\$(Configuration)\SonicOrca.Drawing.dll" />
+    <Reference Include="SonicOrca.Resources" HintPath="external\SonicOrca.Resources\bin\Switch\$(Configuration)\SonicOrca.Resources.dll" />
+    <Reference Include="SonicOrca.SDL2" HintPath="external\SonicOrca.SDL2\bin\Switch\$(Configuration)\SonicOrca.SDL2.dll" />
+    <Reference Include="SonicOrca" HintPath="external\SonicOrca\bin\Switch\$(Configuration)\SonicOrca.dll" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

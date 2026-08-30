@@ -27,9 +27,15 @@ namespace S2HD
 
       public static IniConfiguration Configuration { get; private set; }
 
+      public static string AppBaseDirectory => AppContext.BaseDirectory;
+
       public static string UserDataDirectory
       {
+#if MONO_NX
+        get => Path.Combine(Program.AppBaseDirectory, "userdata");
+#else
         get => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SonicOrca");
+#endif
       }
 
       private static string LogPath => Path.Combine(Program.UserDataDirectory, "sonicorca.log");
@@ -72,6 +78,9 @@ namespace S2HD
 
       private static void RunOrFocusGame()
       {
+#if MONO_NX
+        Program.RunGame();
+#else
         bool createdNew;
         using (new Mutex(true, "SonicOrca", out createdNew))
         {
@@ -80,12 +89,16 @@ namespace S2HD
           else
             Program.FocusGame();
         }
+#endif
       }
 
       private static IPlatform GetPlatform() => (IPlatform) SDL2Platform.Instance;
 
       private static void RunGame()
       {
+#if MONO_NX
+        SonicOrcaGameContext.IsMaxPerformance = true;
+#endif
         using (IPlatform platform = Program.GetPlatform())
         {
           try
@@ -128,6 +141,7 @@ namespace S2HD
         Trace.Unindent();
         Trace.WriteLine(new string('-', 80 /*0x50*/));
         Trace.WriteLine(string.Empty);
+        Trace.Flush();
       }
 
       private static void FocusGame()
@@ -143,6 +157,9 @@ namespace S2HD
 
       private static bool CheckOpenGL(IPlatform platform)
       {
+#if MONO_NX
+        return true;
+#else
         Trace.WriteLine("Verifying OpenGL version");
         Version openGlVersion = platform.GetOpenGLVersion();
         Trace.WriteLine($"OpenGL {openGlVersion.Major}.{openGlVersion.Minor}");
@@ -151,6 +168,7 @@ namespace S2HD
         Trace.WriteLine("OpenGL version too low");
         Program.ShowErrorMessageBox($"OpenGL {Program.AppMinOpenGLVersion.Major}.{Program.AppMinOpenGLVersion.Minor} or later is required.");
         return false;
+#endif
       }
 
       public static void ShowErrorMessageBox(string text)
@@ -164,9 +182,15 @@ namespace S2HD
 
       private static void WriteLogHeader()
       {
+#if MONO_NX
+        Trace.AutoFlush = false;
+#else
         Trace.AutoFlush = true;
+#endif
         Trace.Listeners.Add((TraceListener) new TextWriterTraceListener(Program.LogPath));
+#if !MONO_NX
         Trace.Listeners.Add((TraceListener) new ConsoleTraceListener());
+#endif
         Trace.WriteLine((object) Environment.OSVersion);
         Trace.WriteLine($"SonicOrca {Program.AppVersion} [{"RELEASE"} {Program.AppArchitecture}]");
         Trace.WriteLine(DateTime.Now.ToString("dd MMMM yyyy @ hh:mm tt"));
@@ -196,13 +220,17 @@ namespace S2HD
           Trace.Unindent();
         }
         if (!logStackTrace || string.IsNullOrEmpty(ex.StackTrace))
+        {
+          Trace.Flush();
           return;
+        }
         string[] strArray2 = ex.StackTrace.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
         Trace.WriteLine("STACK TRACE:");
         Trace.Indent();
         foreach (string str in strArray2)
           Trace.WriteLine(str.Trim());
         Trace.Unindent();
+        Trace.Flush();
       }
     }
 }

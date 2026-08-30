@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <SonicOrcaTargetFramework Condition="'$(SonicOrcaTargetFramework)' == ''">net8.0</SonicOrcaTargetFramework>
+    <Platforms>AnyCPU;x64;x86;Switch</Platforms>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)' == 'Switch'">
+    <SonicOrcaTargetFramework>net9.0</SonicOrcaTargetFramework>
+    <OpenTKSwitchAssembly Condition="'$(OpenTKSwitchAssembly)' == ''">$(MSBuildThisFileDirectory)..\OpenTK\src\OpenTK\bin\Release\OpenTK.dll</OpenTKSwitchAssembly>
+    <NuGetAudit>false</NuGetAudit>
+    <DefineConstants>$(DefineConstants);MONO_NX;SWITCH</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputPath>bin\Switch\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+</Project>

@@ -55,7 +55,11 @@ namespace SonicOrca
         this.Configuration = Program.Configuration;
         this.UserDataDirectory = Program.UserDataDirectory;
         this._canvas = this.Window.GraphicsContext.CreateFrameBuffer(1920, 1080);
+#if MONO_NX
+        SonicOrcaGameContext.IsMaxPerformance = true;
+#else
         SonicOrcaGameContext.IsMaxPerformance = this.Configuration.GetPropertyBoolean("graphics", "max_performance");
+#endif
         this.Audio.Volume = this.Configuration.GetPropertyDouble("audio", "volume", 1.0);
         this.Audio.MusicVolume = this.Configuration.GetPropertyDouble("audio", "music_volume", 0.2);
         this.Audio.SoundVolume = this.Configuration.GetPropertyDouble("audio", "sound_volume", 1.0);
@@ -64,9 +68,13 @@ namespace SonicOrca
         this.Settings.Apply();
         this.Window.WindowTitle = "Sonic 2 HD";
         this.Window.AspectRatio = new Vector2i(16 /*0x10*/, 9);
-        string directoryName = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        string directoryName = Program.AppBaseDirectory;
         this.LoadResourceFiles(Path.Combine(directoryName, "data"));
+#if MONO_NX
+        if (this.Configuration.GetPropertyBoolean("general", "use_mods", false))
+#else
         if (bool.Parse(this.Configuration.GetProperty("general", "use_mods", "true")))
+#endif
           this.LoadResourceFiles(Path.Combine(directoryName, "mods"));
         this.RenderFactory = DefaultRendererFactory.Create(this.Window.GraphicsContext);
         this._rootGameState = (IGameState) new RootGameState(this);
